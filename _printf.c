@@ -1,66 +1,76 @@
-#include "main.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <unistd.h>
 
-#define BUFF_SIZE 1024
+int print_char(int c)
+{
+return (write(1, &c, 1));
+}
 
-void print_buffer(char *buffer, int *buff_ind);
-void append_char(char **buffer, int *buff_ind, char c);
+int print_str(const char *str)
+{
+int char_count = 0;
+while (*str)
+{
+char_count += print_char(*str);
+str++;
+}
+return (char_count);
+}
+
+int _printf(const char *format, ...);
 
 int _printf(const char *format, ...)
 {
-int i, printed = 0, printed_chars = 0;
-int flags, width, precision, size, buff_ind = 0;
-va_list list;
-char *buffer = (char *)malloc(BUFF_SIZE * sizeof(char));
+va_list args;
+va_start(args, format);
 
-if (format == NULL || buffer == NULL)
+int char_count = 0;
+while (*format)
 {
-free(buffer);
-return (-1);
+if (*format == '%')
+{
+format++; '%'
+switch (*format)
+{
+case 'c':
+{
+int c = va_arg(args, int);
+char_count += print_char(c);
+break;
 }
-
-va_start(list, format);
-
-for (i = 0; format && format[i] != '\0'; i++)
+case 's':
 {
-if (format[i] != '%')
+const char *str = va_arg(args, const char *);
+char_count += print_str(str);
+break;
+}
+case '%':
 {
-append_char(&buffer, &buff_ind, format[i]);
-printed_chars++;
+char_count += print_char('%');
+break;
+}
+default:
+{
+break;
+}
+}
 }
 else
 {
-print_buffer(buffer, &buff_ind);
-flags = get_flags(format, &i);
-width = get_width(format, &i, list);
-precision = get_precision(format, &i, list);
-size = get_size(format, &i);
-++i;
-printed = handle_print(format, &i, list, &buffer,
-flags, width, precision, size);
-if (printed == -1)
-{
-free(buffer);
-va_end(list);
-return (-1);
+char_count += print_char(*format);
 }
-printed_chars += printed;
-}
-}
-print_buffer(buffer, &buff_ind);
-free(buffer);
-va_end(list);
-return (printed_chars);
+format++;
 }
 
-void append_char(char **buffer, int *buff_ind, char c)
-{
-if (*buff_ind < BUFF_SIZE - 1)
-{
-(*buffer)[(*buff_ind)++] = c;
+va_end(args);
+return (char_count);
 }
-else
-{
-print_buffer(*buffer, buff_ind);
-(*buffer)[(*buff_ind)++] = c;
+
+int main(void)
 }
+int count = _printf("Hello, %s! The answer is %d%%\n", "world", 42);
+printf("Total characters printed: %d\n", count);
+return (0);
 }
+
