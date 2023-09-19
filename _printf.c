@@ -49,14 +49,3 @@ format++;
 va_end(eddie_arg);
 return (character_print);
 }
-
-int main(void)
-{
-_printf("Leo\n");
-_printf("%c\n", 'v');
-_printf("%s\n", "string");
-_printf("%%/n");
-
-return (0);
-}
-
