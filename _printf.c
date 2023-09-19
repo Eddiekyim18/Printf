@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <unistd.h>
+#include "nain.h"
 
 int print_char(int c)
 {
