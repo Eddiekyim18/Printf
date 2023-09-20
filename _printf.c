@@ -1,51 +1,68 @@
 #include "main.h"
+#include <unistd.h>
+#include <stdarg.h>
 
 int _printf(const char *format, ...)
 {
-int character_print = 0;
-va_list eddie_arg;
+	int characters_printed = 0;
+	va_list args;
 
-if (format == NULL)
-return (-1);
+	if (format == NULL)
+	{
+		return (-1);
+	}
 
-va_start(eddie_arg, format);
+	va_start(args, format);
 
-while (*format)
-{
-if (*format != '%')
-{
-write(1, format, 1);
-character_print++;
-}
-else
-{
-format++;
-if (*format == '\0')
-break;
+	while (*format)
+	{
+		if (*format != '%')
+		{
+			write(1, format, 1);
+			characters_printed++;
+		}
+		else
+		{
+			format++;
+			if (*format == '\0')
+				break;
 
-if (*format == '%')
-{
-write(1, format, 1);
-character_print++;
+			if (*format == '%')
+			{
+				write(1, format, 1);
+				characters_printed++;
+			}
+			else if (*format == 'c')
+			{
+				char c = va_arg(args, int);
+
+				write(1, &c, 1);
+				characters_printed++;
+			}
+			else if (*format == 's')
+			{
+				char *str = va_arg(args, char *);
+
+				if (str != NULL)
+
+				{
+					int str_len = 0;
+
+				while (str[str_len] != '\0')
+						str_len++;
+					write(1, str, str_len);
+					characters_printed += str_len;
+				}
+				else
+				{
+					write(1, "(null)", 6);
+					characters_printed += 6;
+				}
+			}
+			format++;
+		}
+	}
+	va_end(args);
+	return (characters_printed);
 }
-else if (*format == 'c')
-{
-char c = va_arg(eddie_arg, int);
-write(1, &c, 1);
-character_print++;
-}
-else if (*format == 's')
-{
-char *str = va_arg(eddie_arg, char*);
-int str_len = 0;
-while (str[str_len] != '\0')
-str_len++;
-write(1, str, str_len);
-character_print += str_len;
-}
-format++;
-}
-}
-va_end(eddie_arg);
-return (character_print);
-}
+
